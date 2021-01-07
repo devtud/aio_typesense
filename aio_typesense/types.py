@@ -1,10 +1,13 @@
 from typing import (
-    TypedDict,
     Optional,
     List,
-    Literal,
     Union,
 )
+
+try:
+    from typing import TypedDict, Literal
+except ImportError as e:
+    from typing_extensions import TypedDict, Literal
 
 
 class SchemaFieldDict(TypedDict):

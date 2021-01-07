@@ -2,7 +2,11 @@ import asyncio
 import uuid
 from time import sleep
 from typing import List
-from unittest.async_case import IsolatedAsyncioTestCase
+
+try:
+    from unittest.async_case import IsolatedAsyncioTestCase
+except ImportError:
+    from aiounittest.case import AsyncTestCase as IsolatedAsyncioTestCase
 
 import docker
 from docker.models.containers import Container
@@ -37,7 +41,7 @@ class DockerTestCase(IsolatedAsyncioTestCase):
         self.maxDiff = None
 
     def tearDown(self) -> None:
-        """ After each test method remove all indexes from meili db"""
+        """ After each test method remove all indexes from db"""
         loop = asyncio.get_event_loop()
         collections: List[dict] = loop.run_until_complete(
             self.client.collections.retrieve()
@@ -67,7 +71,9 @@ def start_container(
         name=f"test-typesense-{uuid.uuid4()}",
         detach=True,
         ports={8108: 8108},
-        volumes={"/tmp/typesense-data": {"bind": "/data", "mode": "rw"}},
+        volumes={
+            f"/tmp/typesense-data-{uuid.uuid4()}": {"bind": "/data", "mode": "rw"}
+        },
     )
     container.start()
 

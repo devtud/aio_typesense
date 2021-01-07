@@ -1,5 +1,10 @@
 import json
-from typing import Dict, Optional, Generic, TypeVar, TypedDict
+from typing import Dict, Optional, Generic, TypeVar
+
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 import httpx
 

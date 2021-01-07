@@ -5,11 +5,13 @@ from tests.docker_ import DockerTestCase
 
 
 class TestDocuments(DockerTestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        super().setUpClass()
-        collection = asyncio.run(cls.client.collections.create(collection_schema))
-        assert "fruits" == collection["name"]
+    def setUp(self) -> None:
+        super().setUp()
+        loop = asyncio.get_event_loop()
+        collection = loop.run_until_complete(
+            self.client.collections.create(collection_schema)
+        )
+        self.assertEqual("fruits", collection["name"])
 
     async def test_documents_get_not_exists(self):
         doc = await self.client.collections["fruits"].documents["docid"].retrieve()
