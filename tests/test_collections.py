@@ -1,33 +1,9 @@
 from unittest import mock
 
+import tests.common
 from aio_typesense.types import CollectionDict
-from tests.utils import DockerTestCase
-
-collection_schema: CollectionDict = {
-    "name": "fruits",
-    "num_documents": 0,
-    "fields": [
-        {
-            "name": "type",
-            "type": "string",
-            "facet": True,
-        },
-        {
-            "name": "name",
-            "type": "string",
-        },
-        {
-            "name": "timestamp",
-            "type": "int32",
-        },
-        {
-            "name": "description",
-            "type": "string",
-            "optional": True,
-        },
-    ],
-    "default_sorting_field": "timestamp",
-}
+from tests.common import collection_schema
+from tests.docker_ import DockerTestCase
 
 
 class TestCollections(DockerTestCase):
@@ -36,8 +12,7 @@ class TestCollections(DockerTestCase):
         self.assertEqual(0, len(collections))
 
     async def test_collections_create(self):
-        global collection_schema
-        expected_response: CollectionDict = {**collection_schema}  # noqa
+        expected_response: CollectionDict = {**tests.common.collection_schema}  # noqa
         expected_fields = []
         for field in expected_response["fields"]:
             expected_fields.append(
@@ -52,7 +27,9 @@ class TestCollections(DockerTestCase):
         expected_response["created_at"] = mock.ANY  # noqa
         expected_response["num_memory_shards"] = mock.ANY  # noqa
 
-        created_col = await self.client.collections.create(collection_schema)
+        created_col = await self.client.collections.create(
+            tests.common.collection_schema
+        )
 
         self.assertEqual(expected_response, created_col)
 

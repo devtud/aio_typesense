@@ -8,36 +8,9 @@ import docker
 from docker.models.containers import Container
 
 from aio_typesense.common import Client
+from tests.common import get_api_key
 
 TYPESENSE_DOCKER_IMAGE = "typesense/typesense:0.18.0"
-
-
-def get_api_key():
-    return "Rhsdhas2asasdasj2"
-
-
-def start_container(
-    api_key: str, docker_base_url: str = "unix://var/run/docker.sock"
-) -> Container:
-    docker_client = docker.DockerClient(base_url=docker_base_url, version="auto")
-
-    docker_client.api.pull(TYPESENSE_DOCKER_IMAGE)
-
-    container: Container = docker_client.containers.create(
-        image=TYPESENSE_DOCKER_IMAGE,
-        command=[
-            "--api-key=" + api_key,
-            "--data-dir=/data",
-        ],
-        name=f"test-typesense-{uuid.uuid4()}",
-        detach=True,
-        ports={8108: 8108},
-        volumes={"/tmp/typesense-data": {"bind": "/data", "mode": "rw"}},
-        # environment={"TYPESENSE_API_KEY": api_key},
-    )
-    container.start()
-
-    return container
 
 
 class DockerTestCase(IsolatedAsyncioTestCase):
@@ -76,3 +49,26 @@ class DockerTestCase(IsolatedAsyncioTestCase):
 
         collections = loop.run_until_complete(self.client.collections.retrieve())
         self.assertEqual(0, len(collections))
+
+
+def start_container(
+    api_key: str, docker_base_url: str = "unix://var/run/docker.sock"
+) -> Container:
+    docker_client = docker.DockerClient(base_url=docker_base_url, version="auto")
+
+    docker_client.api.pull(TYPESENSE_DOCKER_IMAGE)
+
+    container: Container = docker_client.containers.create(
+        image=TYPESENSE_DOCKER_IMAGE,
+        command=[
+            "--api-key=" + api_key,
+            "--data-dir=/data",
+        ],
+        name=f"test-typesense-{uuid.uuid4()}",
+        detach=True,
+        ports={8108: 8108},
+        volumes={"/tmp/typesense-data": {"bind": "/data", "mode": "rw"}},
+    )
+    container.start()
+
+    return container

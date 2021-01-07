@@ -1,5 +1,5 @@
 import json
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Optional
 
 import httpx
 
@@ -102,11 +102,17 @@ class Collection(object):
     def _endpoint_path(self) -> str:
         return "{0}/{1}".format(Collections.RESOURCE_PATH, self.name)
 
-    async def retrieve(self):
-        r = await self.api_call.request(
-            method="GET",
-            endpoint=self._endpoint_path(),
-        )
+    async def retrieve(self) -> Optional[CollectionDict]:
+        try:
+            r = await self.api_call.request(
+                method="GET",
+                endpoint=self._endpoint_path(),
+            )
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == httpx.codes.NOT_FOUND:
+                return None
+            raise e
+
         return json.loads(r)
 
     async def delete(self):
@@ -171,9 +177,6 @@ class ApiCall:
                 method=method, url=url, params=params, headers=headers, json=data
             )
 
-        try:
-            r.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            raise Exception(e.response.content) from e
+        r.raise_for_status()
 
         return r.content
