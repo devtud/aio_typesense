@@ -7,7 +7,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 import docker
 from docker.models.containers import Container
 
-from aio_typesense.common import Client
+from aio_typesense import Client
 from tests.common import get_api_key
 
 TYPESENSE_DOCKER_IMAGE = "typesense/typesense:0.18.0"
