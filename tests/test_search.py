@@ -28,3 +28,28 @@ class TestSearch(DockerTestCase):
             }
         )
         self.assertEqual(2, len(result["hits"]))
+
+    async def test_search_filter(self):
+        collection: Collection[AppleType] = self.client.collections["fruits"]
+        result = await collection.documents.search(
+            {
+                "q": "*",
+                "query_by": ["name"],
+                "filter_by": "color:red",
+            }
+        )
+        self.assertEqual(3, len(result["hits"]))
+
+    async def test_search_facet(self):
+        collection: Collection[AppleType] = self.client.collections["fruits"]
+        result = await collection.documents.search(
+            {
+                "q": "*",
+                "query_by": ["name"],
+                "facet_by": "color",
+            }
+        )
+
+        self.assertEqual(1, len(result["facet_counts"]))
+        self.assertEqual(3, len(result["facet_counts"][0]["counts"]))
+        self.assertEqual(7, result["found"])

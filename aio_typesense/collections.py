@@ -12,7 +12,7 @@ from .api_call import ApiCall
 from .documents import Documents
 from .types import CollectionDict
 
-T = TypeVar("T", bound=TypedDict)
+T = TypeVar("T")
 
 
 class Collections:

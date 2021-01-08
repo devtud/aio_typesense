@@ -5,7 +5,7 @@ try:
 except ImportError as e:
     from typing_extensions import TypedDict, Literal, Protocol
 
-T = TypeVar("T", bound=TypedDict)
+T = TypeVar("T")
 
 
 class SchemaFieldDict(TypedDict):
@@ -35,9 +35,17 @@ class SearchResponseHit(Protocol[T]):
         return super().__getitem__(item)
 
 
+class SearchResponseFacetCountItem(TypedDict):
+    counts: List[dict]
+    field_name: str
+    stats: List
+
+
 class SearchResponse(Protocol[T]):
     @overload
-    def __getitem__(self, item: Literal["facet_count"]) -> List:
+    def __getitem__(
+        self, item: Literal["facet_counts"]
+    ) -> List[SearchResponseFacetCountItem]:
         ...
 
     @overload

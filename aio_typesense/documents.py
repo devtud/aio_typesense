@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 
 class _DocumentProxy(Generic[T]):
-    def __init__(self, api_call, collection_name, document_id):
+    def __init__(self, api_call: ApiCall, collection_name: str, document_id: str):
         self.api_call = api_call
         self.collection_name = collection_name
         self.document_id = document_id
@@ -46,9 +46,9 @@ class Documents(Generic[T]):
     def __init__(self, api_call: ApiCall, collection_name: str):
         self.api_call = api_call
         self.collection_name = collection_name
-        self.documents: Dict[str, _DocumentProxy] = {}
+        self.documents: Dict[str, _DocumentProxy[T]] = {}
 
-    def __getitem__(self, document_id) -> _DocumentProxy:
+    def __getitem__(self, document_id) -> _DocumentProxy[T]:
         if document_id not in self.documents:
             self.documents[document_id] = _DocumentProxy(
                 self.api_call, self.collection_name, document_id
@@ -69,7 +69,7 @@ class Documents(Generic[T]):
         )
         return json.loads(r)
 
-    async def create_many(self, documents: List[T], params=None) -> List[T]:
+    async def create_many(self, documents: List[T], params=None) -> List[dict]:
         return await self.import_(documents, params)
 
     async def upsert(self, document: T) -> T:
@@ -90,7 +90,7 @@ class Documents(Generic[T]):
         )
         return json.loads(r)
 
-    async def import_(self, documents: List[dict], params=None):
+    async def import_(self, documents: List[T], params=None):
 
         content = "\n".join([json.dumps(d) for d in documents])
 
@@ -125,9 +125,7 @@ class Documents(Generic[T]):
         return json.loads(r)
 
     async def delete(self, params=None):
-        return await self.api_call.request(
+        r = await self.api_call.request(
             method="DELETE", endpoint=self._endpoint_path(), params=params
         )
-
-    def delete_one(self, doc_id):
-        ...
+        return json.loads(r)

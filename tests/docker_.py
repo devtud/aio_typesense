@@ -24,7 +24,7 @@ class DockerTestCase(IsolatedAsyncioTestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        """ Before each test class create meili container """
+        """ Before each test class create container """
         api_key = get_api_key()
         cls.container = start_container(api_key=api_key)
         cls.client = Client(node_urls=["http://localhost:8108"], api_key=api_key)
