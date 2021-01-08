@@ -15,7 +15,7 @@ class ApiCall:
         method: str,
         endpoint: str,
         params: dict = None,
-        data: Union[dict, list] = None,
+        data: Union[dict, list, bytes] = None,
     ) -> bytes:
         url = f"{self.node_urls[0]}/{endpoint.strip('/')}"
         headers = {
@@ -23,9 +23,16 @@ class ApiCall:
             "X-TYPESENSE-API-KEY": self.api_key,
         }
 
+        if isinstance(data, bytes):
+            data_ = {"content": data}
+        else:
+            data_ = {"json": data}
+
+        http_client: httpx.AsyncClient
+
         async with httpx.AsyncClient() as http_client:
-            r = await http_client.request(
-                method=method, url=url, params=params, headers=headers, json=data
+            r: httpx.Response = await http_client.request(
+                method=method, url=url, params=params, headers=headers, **data_
             )
 
         try:

@@ -22,7 +22,7 @@ class TestDocuments(DockerTestCase):
             "id": "docid",
             "name": "Red Delicious",
             "timestamp": 23452345,
-            "type": "apple",
+            "color": "red",
         }
         doc = await self.client.collections["fruits"].documents.create(fruit)
 
@@ -33,7 +33,7 @@ class TestDocuments(DockerTestCase):
             "id": "docid",
             "name": "Red Delicious",
             "timestamp": 3253425,
-            "type": "apple",
+            "color": "red",
         }
 
         created_doc = await self.client.collections["fruits"].documents.create(fruit)

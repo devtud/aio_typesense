@@ -4,6 +4,7 @@ from typing import List, Generic, TypeVar, Dict
 import httpx
 
 from .api_call import ApiCall
+from .types import SearchParams, SearchResponse
 
 T = TypeVar("T")
 
@@ -89,21 +90,22 @@ class Documents(Generic[T]):
         )
         return json.loads(r)
 
-    # `documents` can be either a list of document objects (or)
-    #  JSONL-formatted string containing multiple documents
     async def import_(self, documents: List[dict], params=None):
+
+        content = "\n".join([json.dumps(d) for d in documents])
 
         api_response = await self.api_call.request(
             method="POST",
             endpoint=self._endpoint_path("import"),
-            data=documents,
+            data=content.encode(),
             params=params,
         )
+
         res_obj_strs = api_response.split(b"\n")
 
         response_objs = []
         for res_obj_str in res_obj_strs:
-            response_objs.append(json.dumps(res_obj_str))
+            response_objs.append(json.loads(res_obj_str))
 
         return response_objs
 
@@ -114,7 +116,7 @@ class Documents(Generic[T]):
         )
         return api_response
 
-    async def search(self, search_parameters):
+    async def search(self, search_parameters: SearchParams) -> SearchResponse[T]:
         r = await self.api_call.request(
             method="GET",
             endpoint=self._endpoint_path("search"),

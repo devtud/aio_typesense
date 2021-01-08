@@ -20,11 +20,11 @@ class Collections:
 
     def __init__(self, api_call: ApiCall):
         self.api_call: ApiCall = api_call
-        self.collections: Dict[str, _CollectionProxy] = {}
+        self.collections: Dict[str, Collection] = {}
 
-    def __getitem__(self, collection_name: str) -> "_CollectionProxy":
+    def __getitem__(self, collection_name: str) -> "Collection":
         if collection_name not in self.collections:
-            self.collections[collection_name] = _CollectionProxy(
+            self.collections[collection_name] = Collection(
                 self.api_call, collection_name
             )
 
@@ -43,7 +43,7 @@ class Collections:
         return json.loads(r)
 
 
-class _CollectionProxy(Generic[T]):
+class Collection(Generic[T]):
     def __init__(self, api_call: ApiCall, name: str):
         self.name = name
         self.api_call = api_call
