@@ -19,7 +19,7 @@ jobs:
     - run: nox
   coverage:
     runs-on: ubuntu-latest
-    name: Coverage Python ${{ python-version }}
+    name: Coverage Python 3.9
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
