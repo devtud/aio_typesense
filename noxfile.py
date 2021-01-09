@@ -19,6 +19,10 @@ def tests(session: Session) -> None:
 
 @nox.session(python="3.9")
 def coverage(session: Session) -> None:
-    session.install("coverage[toml]", "codecov")
-    session.run("coverage", "xml", "--fail-under=0")
+    session.run("poetry", "lock")
+    session.install(".")
+    session.install("docker")
+    session.install("coverage[toml]")
+    session.install("codecov")
+    session.run("coverage", "run", "-m", "unittest", "discover")
     session.run("codecov", *session.posargs)
