@@ -17,37 +17,25 @@ class TestSearch(DockerTestCase):
         result = loop.run_until_complete(
             self.client.collections["fruits"].documents.create_many(testing_documents)
         )
-        print("---created many", result)
+        for r in result:
+            self.assertTrue(r["success"])
 
     async def test_search_general(self):
         collection: Collection[AppleType] = self.client.collections["fruits"]
-        result = await collection.documents.search(
-            {
-                "q": "apple",
-                "query_by": ["name"],
-            }
-        )
+        result = await collection.documents.search(q="apple", query_by=["name"])
         self.assertEqual(2, len(result["hits"]))
 
     async def test_search_filter(self):
         collection: Collection[AppleType] = self.client.collections["fruits"]
         result = await collection.documents.search(
-            {
-                "q": "*",
-                "query_by": ["name"],
-                "filter_by": "color:red",
-            }
+            q="*", query_by=["name"], filter_by="color:red"
         )
         self.assertEqual(3, len(result["hits"]))
 
     async def test_search_facet(self):
         collection: Collection[AppleType] = self.client.collections["fruits"]
         result = await collection.documents.search(
-            {
-                "q": "*",
-                "query_by": ["name"],
-                "facet_by": "color",
-            }
+            q="*", query_by=["name"], facet_by="color"
         )
 
         self.assertEqual(1, len(result["facet_counts"]))
