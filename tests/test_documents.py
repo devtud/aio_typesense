@@ -14,12 +14,12 @@ class TestDocuments(DockerTestCase):
         self.assertEqual("fruits", collection["name"])
 
     async def test_documents_get_not_exists(self):
-        doc = await self.client.collections["fruits"].documents["docid"].retrieve()
+        doc = await self.client.collections["fruits"].documents["doc_id"].retrieve()
         self.assertIsNone(doc)
 
     async def test_documents_add(self):
         fruit = {
-            "id": "docid",
+            "id": "doc_id",
             "name": "Red Delicious",
             "timestamp": 23452345,
             "color": "red",
@@ -30,7 +30,7 @@ class TestDocuments(DockerTestCase):
 
     async def test_document_add_update(self):
         fruit = {
-            "id": "docid",
+            "id": "doc_id",
             "name": "Red Delicious",
             "timestamp": 3253425,
             "color": "red",
@@ -42,7 +42,7 @@ class TestDocuments(DockerTestCase):
 
         updated_doc = (
             await self.client.collections["fruits"]
-            .documents["docid"]
+            .documents["doc_id"]
             .update({"name": "Golden Delicious"})
         )
-        self.assertEqual({"id": "docid", "name": "Golden Delicious"}, updated_doc)
+        self.assertEqual({"id": "doc_id", "name": "Golden Delicious"}, updated_doc)
