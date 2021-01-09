@@ -1,5 +1,7 @@
 from unittest import mock
 
+import httpx
+
 import tests.common
 from aio_typesense.types import CollectionDict
 from tests.common import collection_schema
@@ -23,6 +25,27 @@ class TestCollections(DockerTestCase):
     async def test_collections_get_no_collections(self):
         collections = await self.client.collections.retrieve()
         self.assertEqual(0, len(collections))
+
+    async def test_collection_get_raises(self):
+        collection_obj = self.client.collections["fruits"]
+
+        with mock.patch.object(collection_obj.api_call, "request") as mocked_request:
+            mocked_request.side_effect = ValueError("error")
+
+            with self.assertRaises(ValueError) as ctx:
+                _ = await collection_obj.retrieve()
+            self.assertTrue(isinstance(ctx.exception, ValueError))
+
+        with mock.patch.object(collection_obj.api_call, "request") as mocked_request:
+            httpx_response_mock = mock.Mock()
+            httpx_response_mock.status_code = 300
+            mocked_request.side_effect = httpx.HTTPStatusError(
+                "msg", request=mock.Mock(), response=httpx_response_mock
+            )
+
+            with self.assertRaises(httpx.HTTPStatusError) as ctx:
+                _ = await collection_obj.retrieve()
+            self.assertTrue(isinstance(ctx.exception, httpx.HTTPStatusError))
 
     async def test_collections_create(self):
         expected_response: CollectionDict = {**tests.common.collection_schema}  # noqa
