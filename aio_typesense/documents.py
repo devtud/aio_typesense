@@ -40,7 +40,7 @@ class _DocumentProxy(Generic[T]):
         )
         return json.loads(r)
 
-    async def delete(self):
+    async def delete(self) -> T:
         r = await self.api_call.request(method="DELETE", endpoint=self._endpoint_path())
         return json.loads(r)
 
