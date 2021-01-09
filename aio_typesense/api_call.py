@@ -1,4 +1,3 @@
-import logging
 from typing import List, Union
 
 import httpx
@@ -35,10 +34,6 @@ class ApiCall:
                 method=method, url=url, params=params, headers=headers, **data_
             )
 
-        try:
-            r.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            logging.error(e.response.content)
-            raise e
+        r.raise_for_status()
 
         return r.content
