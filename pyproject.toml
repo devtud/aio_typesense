@@ -43,6 +43,15 @@ source = ["aio_typesense"]
 
 [tool.coverage.report]
 fail_under = 100
+precision = 2
+exclude_lines = [
+    "pragma: not covered",
+    "@overload",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "pass",
+    "except ImportError:"
+]
 
 [tool.black]
 line-length = 88

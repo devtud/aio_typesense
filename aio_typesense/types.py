@@ -2,7 +2,7 @@ from typing import Optional, List, Union, TypeVar, overload, Dict
 
 try:
     from typing import TypedDict, Literal, Protocol
-except ImportError as e:
+except ImportError:
     from typing_extensions import TypedDict, Literal, Protocol
 
 T = TypeVar("T")
@@ -25,14 +25,14 @@ class CollectionDict(TypedDict):
 class SearchResponseHit(Protocol[T]):
     @overload
     def __getitem__(self, item: Literal["highlights"]) -> List[Dict]:
-        ...
+        pass
 
     @overload
     def __getitem__(self, item: Literal["document"]) -> T:
-        ...
+        pass
 
     def __getitem__(self, item):
-        return super().__getitem__(item)
+        pass
 
 
 class SearchResponseFacetCountItem(TypedDict):
@@ -46,19 +46,19 @@ class SearchResponse(Protocol[T]):
     def __getitem__(
         self, item: Literal["facet_counts"]
     ) -> List[SearchResponseFacetCountItem]:
-        ...
+        pass
 
     @overload
     def __getitem__(self, item: Literal["took_ms"]) -> int:
-        ...
+        pass
 
     @overload
     def __getitem__(self, item: Literal["found"]) -> int:
-        ...
+        pass
 
     @overload
     def __getitem__(self, item: Literal["hits"]) -> List[SearchResponseHit[T]]:
-        ...
+        pass
 
     def __getitem__(self, item):
-        return super().__getitem__(item)
+        pass
